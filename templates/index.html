@@ -3,12 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Worker Travel & Expense Form</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
 <body>
     <h1>Worker Travel & Expense Form</h1>
 
-    <form method="POST" action="/submit">
+    <form method="POST" action="/submit" enctype="multipart/form-data">
         <!-- Section A: Personal Information -->
         <fieldset>
             <legend>A. Personal Information</legend>
@@ -33,47 +32,47 @@
                         <th>Reason</th>
                         <th>Type of Travel</th>
                         <th>Distance (km)</th>
-                        <th>Taxi/Public Amount</th>
+                        <th>Transportation Cost ($)</th>
                         <th>Parking ($)</th>
                         <th>Meals (B/L/D)</th>
+                        <th>Escort</th>
+                        <th>Receipt</th>
+                        <th>Total</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- We'll add JS later to dynamically add rows -->
-                <tr>
-                    <td><input type="date" name="date_1"></td>
-                    <td><input type="time" name="time_1"></td>
-                    <td><input type="text" name="from_1"></td>
-                    <td><input type="text" name="to_1"></td>
-                    <td>
-                        <select name="reason_1">
-                            <option>Medical</option>
-                            <option>Return to Work/School</option>
-                        </select>
-                    </td>
-                    <td>
-                        <select name="travel_type_1">
-                            <option>Driving</option>
-                            <option>Taxi</option>
-                            <option>Public Transit</option>
-                        </select>
-                    </td>
-                    <td><input type="number" step="0.1" name="km_1"></td>
-                    <td><input type="number" step="0.01" name="transport_cost_1"></td>
-                    <td><input type="number" step="0.01" name="parking_1"></td>
-                    <td>
-                        B <input type="checkbox" name="meal_b_1"><br>
-                        L <input type="checkbox" name="meal_l_1"><br>
-                        D <input type="checkbox" name="meal_d_1">
-                    </td>
-                    <td>
-                        <input type="checkbox" name="escort_1">
-                    </td>
-                    <td>
-                        <input type="file" name="receipt_1">
-                    </td>
-                </tr>
-
+                    <tr class="travel-row">
+                        <td><input type="date" name="date_1"></td>
+                        <td><input type="time" name="time_1"></td>
+                        <td><input type="text" name="from_1"></td>
+                        <td><input type="text" name="to_1"></td>
+                        <td>
+                            <select name="reason_1">
+                                <option>Medical</option>
+                                <option>Return to Work/School</option>
+                            </select>
+                        </td>
+                        <td>
+                            <select name="travel_type_1" class="travel-type" onchange="toggleTravelFields(this); updateTotal(this)">
+                                <option value="Driving">Driving</option>
+                                <option value="Taxi">Taxi</option>
+                                <option value="Public Transit">Public Transit</option>
+                            </select>
+                        </td>
+                        <td><input type="number" name="km_1" step="0.1" class="km" oninput="updateTotal(this)"></td>
+                        <td>
+                            <input type="text" name="transportation_cost_1" class="transportation" disabled oninput="updateTotal(this)">
+                        </td>
+                        <td><input type="number" name="parking_1" step="0.01" class="parking" oninput="updateTotal(this)"></td>
+                        <td>
+                            B ($16.79) <input type="checkbox" class="meal" data-meal="breakfast" onchange="updateTotal(this)"><br>
+                            L ($23.78) <input type="checkbox" class="meal" data-meal="lunch" onchange="updateTotal(this)"><br>
+                            D ($32.17) <input type="checkbox" class="meal" data-meal="dinner" onchange="updateTotal(this)">
+                        </td>
+                        <td><input type="checkbox" class="escort" onchange="updateTotal(this)"> ($137.60)</td>
+                        <td><input type="file" name="receipt_1"></td>
+                        <td><strong class="row-total">$0.00</strong></td>
+                    </tr>
                 </tbody>
             </table>
         </fieldset>
@@ -91,5 +90,63 @@
 
         <button type="submit">Submit Form</button>
     </form>
+
+<script>
+function toggleTravelFields(select) {
+    const row = select.closest('.travel-row');
+    const type = select.value;
+
+    const distanceInput = row.querySelector('.km');
+    const transportField = row.querySelector('.transportation');
+
+    if (type === "Driving") {
+        distanceInput.disabled = false;
+        transportField.disabled = true;
+        transportField.value = `$${(parseFloat(distanceInput.value || 0) * 0.58).toFixed(2)}`;
+    } else {
+        distanceInput.disabled = true;
+        distanceInput.value = "";
+        transportField.disabled = false;
+        transportField.value = "";
+    }
+}
+
+function updateTotal(el) {
+    const row = el.closest('.travel-row');
+
+    const km = parseFloat(row.querySelector('.km')?.value || 0);
+    const parking = parseFloat(row.querySelector('.parking')?.value || 0);
+    const escort = row.querySelector('.escort')?.checked;
+    const meals = row.querySelectorAll('.meal');
+
+    const travelType = row.querySelector('.travel-type')?.value;
+    const transportField = row.querySelector('.transportation');
+
+    let transportCost = 0;
+
+    if (travelType === "Driving") {
+        transportCost = km * 0.58;
+        transportField.value = `$${transportCost.toFixed(2)}`;
+    } else {
+        transportCost = parseFloat(transportField.value || 0);
+    }
+
+    let mealTotal = 0;
+    meals.forEach(m => {
+        if (m.checked) {
+            const type = m.dataset.meal;
+            if (type === 'breakfast') mealTotal += 16.79;
+            if (type === 'lunch') mealTotal += 23.78;
+            if (type === 'dinner') mealTotal += 32.17;
+        }
+    });
+
+    const escortCost = escort ? 137.60 : 0;
+    const total = transportCost + parking + escortCost + mealTotal;
+
+    row.querySelector('.row-total').textContent = `$${total.toFixed(2)}`;
+}
+</script>
+
 </body>
 </html>
