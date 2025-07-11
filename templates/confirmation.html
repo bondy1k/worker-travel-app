@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Submission Confirmed</title>
+</head>
+<body>
+    <h1>✅ Submission Complete</h1>
+    <p>Thank you, {{ first_name }} {{ last_name }}.</p>
+    <p>Your claim <strong>#{{ claim_number }}</strong> has been submitted successfully.</p>
+    <p>You submitted <strong>{{ row_count }}</strong> travel {{ "entries" if row_count > 1 else "entry" }}.</p>
+
+    <p><a href="/">← Submit another claim</a></p>
+</body>
+</html>

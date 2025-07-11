@@ -1,0 +1,64 @@
+{
+    "claim_number": "12345678",
+    "first_name": "Stephen",
+    "last_name": "Bondy",
+    "submitted_at": "2025-07-11T12:58:25.011527",
+    "travel_entries": [
+        {
+            "date": "2025-04-13",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": "Driving",
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false
+        },
+        {
+            "date": "2025-04-14",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false
+        },
+        {
+            "date": "2025-04-15",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false
+        },
+        {
+            "date": "2025-04-16",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false
+        }
+    ]
+}

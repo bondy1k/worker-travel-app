@@ -1,0 +1,68 @@
+{
+    "claim_number": "12345678",
+    "first_name": "Stephen",
+    "last_name": "Bondy",
+    "submitted_at": "2025-07-11T13:03:27.827469",
+    "travel_entries": [
+        {
+            "date": "2025-04-13",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": "Driving",
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false,
+            "receipt_file": null
+        },
+        {
+            "date": "2025-04-14",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false,
+            "receipt_file": null
+        },
+        {
+            "date": "2025-04-15",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false,
+            "receipt_file": null
+        },
+        {
+            "date": "2025-04-16",
+            "from": "Home - 140 Blue Jay Crescent",
+            "to": "PT - 288 Huron Street",
+            "reason": "Medical",
+            "travel_type": null,
+            "distance_km": "82",
+            "transportation_cost": null,
+            "parking": "5",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false,
+            "receipt_file": "12345678_row4_20250711130327_First-Holy-Communion-Invitation-03a.pdf"
+        }
+    ]
+}

@@ -1,0 +1,23 @@
+{
+    "claim_number": "12345678",
+    "first_name": "Stephen",
+    "last_name": "Bondy",
+    "submitted_at": "2025-07-11T13:14:06.020961",
+    "travel_entries": [
+        {
+            "date": "2025-07-10",
+            "from": "home ",
+            "to": "hospital",
+            "reason": "Medical",
+            "travel_type": "Driving",
+            "distance_km": "25",
+            "transportation_cost": null,
+            "parking": "10",
+            "meal_b": false,
+            "meal_l": false,
+            "meal_d": false,
+            "escort": false,
+            "receipt_file": null
+        }
+    ]
+}
