@@ -26,7 +26,6 @@
                 <thead>
                     <tr>
                         <th>Date</th>
-                        <th>Time</th>
                         <th>From</th>
                         <th>To</th>
                         <th>Reason</th>
@@ -40,10 +39,9 @@
                         <th>Total</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody id="travel-rows">
                     <tr class="travel-row">
                         <td><input type="date" name="date_1"></td>
-                        <td><input type="time" name="time_1"></td>
                         <td><input type="text" name="from_1"></td>
                         <td><input type="text" name="to_1"></td>
                         <td>
@@ -72,9 +70,13 @@
                         <td><input type="checkbox" class="escort" onchange="updateTotal(this)"> ($137.60)</td>
                         <td><input type="file" name="receipt_1"></td>
                         <td><strong class="row-total">$0.00</strong></td>
+                        <td><button type="button" class="delete-row" onclick="deleteRow(this)">🗑️</button></td>
                     </tr>
                 </tbody>
             </table>
+            <p><strong>Grand Total:</strong> <span id="grand-total">$0.00</span></p>
+            <button type="button" onclick="addTravelRow()">+ Add Row</button>
+            <button type="button" onclick="repeatLastRow()">+ Repeat Last Entry</button>
         </fieldset>
 
         <!-- Section C: Declaration -->
@@ -145,8 +147,161 @@ function updateTotal(el) {
     const total = transportCost + parking + escortCost + mealTotal;
 
     row.querySelector('.row-total').textContent = `$${total.toFixed(2)}`;
+    updateGrandTotal();
 }
-</script>
 
+let rowCount = 1;
+
+function addTravelRow() {
+    const table = document.getElementById("travel-rows");
+    const originalRow = document.querySelector(".travel-row");
+    const newRow = originalRow.cloneNode(true);
+
+    rowCount += 1;
+
+    // Update all input/select names and reset values
+    newRow.querySelectorAll("input, select").forEach((input) => {
+        const name = input.getAttribute("name");
+        if (name) {
+            const baseName = name.split("_")[0];
+            input.setAttribute("name", `${baseName}_${rowCount}`);
+        }
+
+        // Reset values based on type
+        if (input.type === "checkbox") {
+            input.checked = false;
+        } else if (input.type === "file") {
+            input.value = "";
+        } else if (input.tagName === "SELECT") {
+            input.selectedIndex = 0;
+        } else {
+            input.value = "";
+        }
+
+        // Re-enable all fields and update events
+        input.disabled = input.classList.contains("transportation") || input.classList.contains("km") ? true : false;
+
+        if (input.classList.contains("travel-type")) {
+            input.onchange = function () {
+                toggleTravelFields(this);
+                updateTotal(this);
+            };
+        }
+
+        if (
+            input.classList.contains("km") ||
+            input.classList.contains("transportation") ||
+            input.classList.contains("parking") ||
+            input.classList.contains("meal") ||
+            input.classList.contains("escort")
+        ) {
+            input.oninput = function () {
+                updateTotal(this);
+            };
+            input.onchange = function () {
+                updateTotal(this);
+            };
+        }
+    });
+
+    // Reset row total display
+    const totalCell = newRow.querySelector(".row-total");
+    if (totalCell) totalCell.textContent = "$0.00";
+
+    table.appendChild(newRow);
+}
+
+function repeatLastRow() {
+    const table = document.getElementById("travel-rows");
+    const lastRow = table.lastElementChild;
+    const newRow = lastRow.cloneNode(true);
+
+    rowCount++;
+
+    newRow.querySelectorAll("input, select").forEach((input) => {
+        const name = input.getAttribute("name");
+        if (name) {
+            const baseName = name.split("_")[0];
+            input.setAttribute("name", `${baseName}_${rowCount}`);
+        }
+
+        // Always clear date and file input
+        if (input.type === "date" || input.type === "file") {
+            input.value = "";
+        }
+
+        // Keep all checkbox states (meals, escort)
+        // Keep km or transport cost depending on travel type
+
+        // Reattach event handlers
+        if (input.classList.contains("travel-type")) {
+            input.onchange = function () {
+                toggleTravelFields(this);
+                updateTotal(this);
+            };
+        }
+
+        if (
+            input.classList.contains("km") ||
+            input.classList.contains("transportation") ||
+            input.classList.contains("parking") ||
+            input.classList.contains("meal") ||
+            input.classList.contains("escort")
+        ) {
+            input.oninput = function () {
+                updateTotal(this);
+            };
+            input.onchange = function () {
+                updateTotal(this);
+            };
+        }
+
+        if (input.classList.contains("delete-row")) {
+            input.onclick = function () {
+                deleteRow(this);
+            };
+        }
+    });
+
+    // Reset row total display
+    const totalCell = newRow.querySelector(".row-total");
+    if (totalCell) totalCell.textContent = "$0.00";
+
+    table.appendChild(newRow);
+
+    // Re-trigger logic
+    const newTravelType = newRow.querySelector(".travel-type");
+    if (newTravelType) {
+        toggleTravelFields(newTravelType);
+        updateTotal(newTravelType);
+    }
+}
+
+function updateGrandTotal() {
+    const totals = document.querySelectorAll(".row-total");
+    let grand = 0;
+    totals.forEach(t => {
+        const value = parseFloat(t.textContent.replace("$", "") || 0);
+        grand += value;
+    });
+    document.getElementById("grand-total").textContent = `$${grand.toFixed(2)}`;
+}
+
+function deleteRow(btn) {
+    const row = btn.closest(".travel-row");
+    const table = document.getElementById("travel-rows");
+
+    // Don’t delete the last remaining row
+    if (table.querySelectorAll(".travel-row").length === 1) {
+        alert("At least one row must remain.");
+        return;
+    }
+
+    row.remove();
+    updateGrandTotal();
+}
+
+
+</script>
 </body>
 </html>
