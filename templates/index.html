@@ -178,8 +178,8 @@ function addTravelRow() {
             input.value = "";
         }
 
-        // Re-enable all fields and update events
-        input.disabled = input.classList.contains("transportation") || input.classList.contains("km") ? true : false;
+        // Re-enable all fields; state will be set based on travel type
+        input.disabled = false;
 
         if (input.classList.contains("travel-type")) {
             input.onchange = function () {
@@ -209,6 +209,13 @@ function addTravelRow() {
     if (totalCell) totalCell.textContent = "$0.00";
 
     table.appendChild(newRow);
+
+    // Set field states based on initial travel type
+    const newTravelType = newRow.querySelector('.travel-type');
+    if (newTravelType) {
+        toggleTravelFields(newTravelType);
+        updateTotal(newTravelType);
+    }
 }
 
 function repeatLastRow() {
