@@ -4,8 +4,104 @@ from datetime import datetime
 import os
 import json
 import csv
+import sqlite3
 
 app = Flask(__name__)
+
+DB_PATH = "travel_app.db"
+
+
+def init_db():
+    """Create database tables if they don't exist."""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS submissions (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            claim_number TEXT,
+            first_name TEXT,
+            last_name TEXT,
+            submitted_at TEXT
+        )
+        """
+    )
+    cur.execute(
+        """
+        CREATE TABLE IF NOT EXISTS travel_entries (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            submission_id INTEGER,
+            date TEXT,
+            from_location TEXT,
+            to_location TEXT,
+            reason TEXT,
+            travel_type TEXT,
+            distance_km REAL,
+            transportation_cost TEXT,
+            parking REAL,
+            meal_b INTEGER,
+            meal_l INTEGER,
+            meal_d INTEGER,
+            escort INTEGER,
+            receipt_file TEXT,
+            FOREIGN KEY(submission_id) REFERENCES submissions(id)
+        )
+        """
+    )
+    conn.commit()
+    conn.close()
+
+
+def insert_submission(claim_number: str, first_name: str, last_name: str) -> int:
+    """Insert a submission and return its DB id."""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    submitted_at = datetime.now().isoformat()
+    cur.execute(
+        "INSERT INTO submissions (claim_number, first_name, last_name, submitted_at) VALUES (?, ?, ?, ?)",
+        (claim_number, first_name, last_name, submitted_at),
+    )
+    submission_id = cur.lastrowid
+    conn.commit()
+    conn.close()
+    return submission_id
+
+
+def insert_travel_entry(submission_id: int, row: dict) -> None:
+    """Insert a single travel entry linked to a submission."""
+    conn = sqlite3.connect(DB_PATH)
+    cur = conn.cursor()
+    cur.execute(
+        """
+        INSERT INTO travel_entries (
+            submission_id, date, from_location, to_location, reason,
+            travel_type, distance_km, transportation_cost, parking,
+            meal_b, meal_l, meal_d, escort, receipt_file
+        ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        """,
+        (
+            submission_id,
+            row.get("date"),
+            row.get("from"),
+            row.get("to"),
+            row.get("reason"),
+            row.get("travel_type"),
+            row.get("distance_km"),
+            row.get("transportation_cost"),
+            row.get("parking"),
+            int(row.get("meal_b")),
+            int(row.get("meal_l")),
+            int(row.get("meal_d")),
+            int(row.get("escort")),
+            row.get("receipt_file"),
+        ),
+    )
+    conn.commit()
+    conn.close()
+
+
+# Initialize the database when the application starts
+init_db()
 
 @app.route("/")
 def index():
@@ -57,6 +153,11 @@ def submit():
             "receipt_file": receipt_filename
         }
         travel_entries.append(row)
+
+    # Store submission in the database
+    submission_id = insert_submission(claim_number, first_name, last_name)
+    for row in travel_entries:
+        insert_travel_entry(submission_id, row)
 
     # Final data package
     submission_data = {
